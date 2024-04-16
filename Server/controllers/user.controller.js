@@ -1,5 +1,3 @@
-const controller=(req, res)=>{
-    res.send("Backend Home Route Response");
+export const userController=(req, res)=>{
+    res.send("Backend User Route Working 😎");
 }
-
-export default controller
