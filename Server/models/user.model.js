@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 
+//schema or format/structure of database models
 const userSchema = new mongoose.Schema({
     username: {
         type: String,
