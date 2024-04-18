@@ -65,13 +65,14 @@ const SignUp = () => {
       </form>
       
       <div className="flex my-3 gap-2">
-        <p>Already have an acount ?🤔</p>
+        <p>Already have an acount ?🤠</p>
         
         <Link to={"/sign-in"}>
           <span className="text-blue-500 font-bold hover:font-extrabold">SignIn</span>
         </Link>
-        {error && <p className="text-red-500 my-5">{error}</p> }
-      </div>
+      </div> 
+      
+      {error && <p className="text-red-500 my-5">{error}</p> }
     
     </div>
   );
