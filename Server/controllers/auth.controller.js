@@ -3,8 +3,8 @@ import bcryptjs from "bcrypt";
 import {errorHandler} from "../utils/error.js";
 import jwt from "jsonwebtoken";
 
-//handles routing for signUp
-export const signup=async(req, res, next)=>{
+//handles auth fn for signUp
+export const signUp=async(req, res, next)=>{
     //destructure the required objects
     const {username, email, password}=req.body;
     //to hash the user password
@@ -21,8 +21,8 @@ export const signup=async(req, res, next)=>{
     }
 }
 
-//handles routing for signIn
-export const signin=async(req, res, next)=>{
+//handles auth fn for signIn
+export const signIn=async(req, res, next)=>{
     const {email, password}=req.body;
     try {
 
@@ -41,6 +41,45 @@ export const signin=async(req, res, next)=>{
             .cookie('access_token', token, {httpOnly: true})
             .status(200)
             .json(rest);
+    }
+    catch(error) {
+        next(error);
+    }
+}
+
+//handles auth fn for google signIn
+export const googleSignIn=async(req, res, next)=>{
+    try {
+        //check for if user email exist and valid too
+        const validUser = await User.findOne({email: req.body.email});
+        if(validUser) {
+            const token=jwt.sign({id: validUser._id }, process.env.JWT_SECRET);
+            const {password: pass, ...rest}=validUser._doc;
+            res
+            .cookie('access_token', token, {httpOnly: true})
+            .status(200)
+            .json(rest);
+        }
+        else {
+            const generatedPass = Math.random().toString(36).slice(-8)+
+            Math.random().toString(36).slice(-8)
+
+            const hashPass = bcryptjs.hashSync(generatedPass, 10);
+            const newUser = new User({
+                username: req.body.name.split(" ").join("").toLowerCase() + Math.random().toString(36).slice(-4),
+                email: req.body.email,
+                password: hashPass,
+                avatar: req.body.photo,
+            })
+            await newUser.save();
+            const token=jwt.sign({id: newUser._id }, process.env.JWT_SECRET);
+            const {password: pass, ...rest}=newUser._doc;
+            res
+            .cookie('access_token', token, {httpOnly: true})
+            .status(200)
+            .json(rest);
+        }
+
     }
     catch(error) {
         next(error);

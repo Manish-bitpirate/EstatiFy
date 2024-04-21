@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { signInStart, signInSuccess, signInFailure } from "../app/user/userSlice.js";
+import OAuth from "../components/OAuth.jsx";
 
 const SignIn = () => {
   //useStates to handle form data
@@ -54,7 +55,7 @@ const SignIn = () => {
   };
 
   return (
-    <div className="text-center my-auto p-3 max-w-lg mx-auto">
+    <div className="p-3 max-w-lg m-auto text-center">
       <h1 className="text-3xl font-semibold my-7 ">
         SignIn
       </h1>
@@ -67,7 +68,7 @@ const SignIn = () => {
         font-mono hover:text-orange-300" >
           {loading ? 'Loading ⏳': 'Sign In 🚀'}
         </button>
-      
+        <OAuth/>
       </form>
       
       <div className="flex my-3 gap-2">
