@@ -9,27 +9,26 @@ const SignIn = () => {
   const [formData, setFormData] = useState({});
 
   //importing from global redux values
-  const {loading, error} = useSelector((state)=>state.user)
+  const { loading, error } = useSelector((state) => state.user)
 
   //using navigate and dispatch from react-router and react-redux
-  const navigate=useNavigate();
-  const dispatch=useDispatch();
-  
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   //form handler
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.id]: e.target.value,
-    })  
+    })
   };
 
   //form submit handler
-  const handleSubmit = async(e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-        //starting the async loading... using redux start fn
-        dispatch(signInStart());
-
+      //starting the async loading... using redux start fn
+      dispatch(signInStart());
       const res = await fetch('/api/auth/signin', {
         method: 'POST',
         headers: {
@@ -38,7 +37,7 @@ const SignIn = () => {
         body: JSON.stringify(formData),
       })
       const data = await res.json();
-      if(data.success === false){
+      if (data.success === false) {
         //dispatching redux failure fn
         dispatch(signInFailure(data.message));
         return;
@@ -46,8 +45,8 @@ const SignIn = () => {
       //dispatching redux success fn
       dispatch(signInSuccess(data));
       navigate("/");
-    } 
-    
+    }
+
     catch (error) {
       //dispatching redux failure fn
       dispatch(signInFailure(error.message));
@@ -60,26 +59,26 @@ const SignIn = () => {
         SignIn
       </h1>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        
+
         <input type="text" placeholder="email" className="border p-2 rounded-lg" id="email" onChange={handleChange} />
         <input type="text" placeholder="password" className="border p-2 rounded-lg" id="password" onChange={handleChange} />
-        
+
         <button disabled={loading} className="bg-blue-950 text-white text-1xl p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-60
         font-mono hover:text-orange-300" >
-          {loading ? 'Loading ⏳': 'Sign In 🚀'}
+          {loading ? 'Loading ⏳' : 'Sign In 🚀'}
         </button>
-        <OAuth/>
+        <OAuth />
       </form>
-      
+
       <div className="flex my-3 gap-2">
         <p>Dont have an acount ?🤔</p>
-        
+
         <Link to={"/sign-up"}>
           <span className="text-blue-500 font-bold hover:font-extrabold">SignUp</span>
         </Link>
       </div>
-      {error && <p className="text-red-500 my-5">{error}</p> }
-    
+      {error && <p className="text-red-500 my-5">{error}</p>}
+
     </div>
   );
 }
