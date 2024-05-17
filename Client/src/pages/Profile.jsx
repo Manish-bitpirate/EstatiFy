@@ -1,15 +1,15 @@
 import { useRef, useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 //from firebase
-import {getDownloadURL, getStorage, ref, uploadBytesResumable} from "firebase/storage";
-import {app} from "../firebase";
+import { getDownloadURL, getStorage, ref, uploadBytesResumable } from "firebase/storage";
+import { app } from "../firebase";
 
-import {updateUserStart, updateUserSuccess, updateUserFailure,  deleteUserStart, deleteUserSuccess, deleteUserFailure} from "../app/user/userSlice.js";
+import { updateUserStart, updateUserSuccess, updateUserFailure, deleteUserStart, deleteUserSuccess, deleteUserFailure,  signOutStart, signOutSuccess, signOutFailure } from "../app/user/userSlice.js";
 import { useDispatch } from "react-redux";
 
 const Profile = () => {
   //global user redux state
-  const {currentUser} = useSelector((state)=>state.user);
+  const { currentUser } = useSelector((state) => state.user);
   //helper states
   const fileRef = useRef(null);
   const [file, setFile] = useState(undefined);
@@ -20,7 +20,7 @@ const Profile = () => {
 
   //saves the image inbetween renders
   useEffect(() => {
-    if(file){
+    if (file) {
       handleFileUpload(file);
     }
   }, [file]);
@@ -32,19 +32,19 @@ const Profile = () => {
     const storageRef = ref(storage, fileName);
     const uploadTask = uploadBytesResumable(storageRef, file);
 
-    uploadTask.on('state_changed', 
-      (snapshot)=>{
-        const progress=(snapshot.bytesTransferred/snapshot.totalBytes)*100;
+    uploadTask.on('state_changed',
+      (snapshot) => {
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
         setFilePerc(Math.round(progress));
       },
-      (error)=>{
+      (error) => {
         setFileUploadError(true);
         console.log(error);
       },
-      ()=>{
+      () => {
         getDownloadURL(uploadTask.snapshot.ref).then(
-          (downloadURL)=>{
-            setFormData({...formData, avatar:downloadURL});
+          (downloadURL) => {
+            setFormData({ ...formData, avatar: downloadURL });
           }
         )
       },
@@ -53,11 +53,11 @@ const Profile = () => {
 
   //saves and changes made to form
   const handleChange = (e) => {
-    setFormData({...formData, [e.target.id]: e.target.value})
+    setFormData({ ...formData, [e.target.id]: e.target.value })
   }
 
   //handles update user function
-  const handleUpdateUser = async(e) => {
+  const handleUpdateUser = async (e) => {
     e.preventDefault();
     try {
       dispatch(updateUserStart());
@@ -83,7 +83,7 @@ const Profile = () => {
   }
 
   //handles delete user function
-  const handleDeleteUser = async() => {
+  const handleDeleteUser = async () => {
     try {
       dispatch(deleteUserStart());
       const res = await fetch(`/api/user/delete/${currentUser._id}`, {
@@ -101,9 +101,28 @@ const Profile = () => {
       }
       //dispatching redux success fn
       dispatch(deleteUserSuccess(data));
-      console.log("User deleted successfully 🚀");
+      console.log("User deleted successfully 🌊");
     } catch (error) {
       dispatch(deleteUserFailure(error.message));
+    }
+  }
+
+  //handles signout user function
+  const handleSignOut = async () => {
+    try {
+      dispatch(signOutStart());
+      const res = await fetch(`/api/auth/signout`)
+      const data = await res.json();
+      if (data.success === false) {
+        //dispatching redux failure fn
+        dispatch(signOutFailure(data.message));
+        return;
+      }
+      //dispatching redux success fn
+      dispatch(signOutSuccess(data));
+      console.log("User logged out successfully 🚀");
+    } catch (error) {
+      dispatch(signOutFailure(error.message));
     }
   }
 
@@ -112,14 +131,14 @@ const Profile = () => {
     <div className="p-3 max-w-lg m-auto">
       <h1 className="text-3xl font-semibold text-center my-7">Profile</h1>
       <form onSubmit={handleUpdateUser} className="flex flex-col gap-4">
-        <input onChange={(e)=>setFile(e.target.files[0])} type="file" ref={fileRef} hidden accept="image/*" />
+        <input onChange={(e) => setFile(e.target.files[0])} type="file" ref={fileRef} hidden accept="image/*" />
 
-        <img onClick={()=>fileRef.current.click()} src={formData.avatar || currentUser.avatar} alt="profile" className="rounded-full h-24 w-24 object-cover cursor-pointer self-center mt-2"/>
+        <img onClick={() => fileRef.current.click()} src={formData.avatar || currentUser.avatar} alt="profile" className="rounded-full h-24 w-24 object-cover cursor-pointer self-center mt-2" />
 
         <p className="text-sm self-center ">
-          {fileUploadError? (
+          {fileUploadError ? (
             <span className="text-red-600">Error Image Upload(Image must be less than 2MB)</span>
-          ): filePerc > 0 && filePerc < 100 ? (
+          ) : filePerc > 0 && filePerc < 100 ? (
             <span className="text-slate-600 ">{`Uploading ${filePerc}%`}</span>
           ) : filePerc === 100 ? (
             <span className="text-green-500 "> Image successfully uploaded!</span>
@@ -128,12 +147,12 @@ const Profile = () => {
           )}
         </p>
 
-        <input type="text" placeholder="username" className="border p-2 rounded-lg" id="username" defaultValue={currentUser.username} onChange={handleChange}/>
-        
-        <input type="text" placeholder="email" className="border p-2 rounded-lg" id="email" defaultValue={currentUser.email} onChange={handleChange}/>
-        
-        <input type="password" placeholder="password" className="border p-2 rounded-lg" id="password" onChange={handleChange}/>
-        
+        <input type="text" placeholder="username" className="border p-2 rounded-lg" id="username" defaultValue={currentUser.username} onChange={handleChange} />
+
+        <input type="text" placeholder="email" className="border p-2 rounded-lg" id="email" defaultValue={currentUser.email} onChange={handleChange} />
+
+        <input type="password" placeholder="password" className="border p-2 rounded-lg" id="password" onChange={handleChange} />
+
         <button className="bg-blue-600 text-white text-1xl p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-60
         font-mono hover:text-orange-300" >
           Update
@@ -141,7 +160,7 @@ const Profile = () => {
       </form>
       <div className="flex justify-between mt-5">
         <span onClick={handleDeleteUser} className="text-red-700 cursor-progress">Delete Account</span>
-        <span className="text-red-700 cursor-progress">Sign Out</span>
+        <span onClick={handleSignOut} className="text-red-700 cursor-progress">Sign Out</span>
       </div>
     </div>
   );
