@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 
 import userRouter from "./routes/user.route.js";
 import authRouter from "./routes/auth.route.js";
+import listingRouter from "./routes/listing.route.js";
 
 //for using env variables
 dotenv.config();
@@ -28,9 +29,14 @@ const listener=app.listen(8000, (req,  res)=>{
 //server ->express routes
 app.get("/",(req,res)=>{res.send("Backend Home Route Working 💥💥💥")});
 
+//route for user data- update/delete func
 app.use("/api/user", userRouter);
 
+//route for user sign- in/up/out
 app.use("/api/auth", authRouter);
+
+//route for listing
+app.use("/api/listing", listingRouter);
 
 //error handler
 app.use((err, req, res, next)=>{
