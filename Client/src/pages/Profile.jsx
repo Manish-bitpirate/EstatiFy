@@ -4,18 +4,20 @@ import { useSelector } from "react-redux";
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from "firebase/storage";
 import { app } from "../firebase";
 
-import { updateUserStart, updateUserSuccess, updateUserFailure, deleteUserStart, deleteUserSuccess, deleteUserFailure,  signOutStart, signOutSuccess, signOutFailure } from "../app/user/userSlice.js";
+import { updateUserStart, updateUserSuccess, updateUserFailure, deleteUserStart, deleteUserSuccess, deleteUserFailure, signOutStart, signOutSuccess, signOutFailure } from "../app/user/userSlice.js";
 import { useDispatch } from "react-redux";
+import { Link } from "react-router-dom";
 
 const Profile = () => {
   //global user redux state
-  const { currentUser } = useSelector((state) => state.user);
+  const { currentUser, loading, error } = useSelector((state) => state.user);
   //helper states
   const fileRef = useRef(null);
   const [file, setFile] = useState(undefined);
   const [filePerc, setFilePerc] = useState(0);
   const [fileUploadError, setFileUploadError] = useState(false);
   const [formData, setFormData] = useState({});
+  const [updateSuccess, setUpdateSuccess] = useState(false);
   const dispatch = useDispatch();
 
   //saves the image inbetween renders
@@ -24,6 +26,11 @@ const Profile = () => {
       handleFileUpload(file);
     }
   }, [file]);
+
+  //saves and changes made to form
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value })
+  }
 
   //handles user image upload in firebase storage
   const handleFileUpload = (file) => {
@@ -51,11 +58,6 @@ const Profile = () => {
     );
   }
 
-  //saves and changes made to form
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.id]: e.target.value })
-  }
-
   //handles update user function
   const handleUpdateUser = async (e) => {
     e.preventDefault();
@@ -76,6 +78,7 @@ const Profile = () => {
       }
       //dispatching redux success fn
       dispatch(updateUserSuccess(data));
+      setUpdateSuccess(true);
       console.log("User credentials updated successfully 🌌");
     } catch (error) {
       dispatch(updateUserFailure(error.message));
@@ -155,13 +158,25 @@ const Profile = () => {
 
         <button className="bg-blue-600 text-white text-1xl p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-60
         font-mono hover:text-orange-300" >
-          Update
+          {loading ? `Loading...` : `Update`}
         </button>
+
+        <Link to={"/create-listing"} className="bg-green-600 text-white text-center text-1xl p-3 rounded-lg uppercase hover:opacity-95 disabled:opacity-60
+            font-mono hover:text-orange-300" >
+          Create Listing
+        </Link>
       </form>
+
       <div className="flex justify-between mt-5">
         <span onClick={handleDeleteUser} className="text-red-700 cursor-progress">Delete Account</span>
         <span onClick={handleSignOut} className="text-red-700 cursor-progress">Sign Out</span>
       </div>
+
+      <p className='text-red-700 mt-5 text-center'>{error ? error : ''}</p>
+      <p className='text-green-700 mt-5 text-center'>
+        {updateSuccess ? 'User is updated successfully!' : ''}
+      </p>
+
     </div>
   );
 }
