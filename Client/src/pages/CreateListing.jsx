@@ -130,8 +130,10 @@ export default function CreateListing() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      if(formData.imageUrls.length < 1) return setError(`You must upload atleast one image`);
-      if(+formData.regularPrice < +formData.discountedPrice) return setError(`Discounted price must be lower than regular price`);
+      if (formData.imageUrls.length < 1)
+        return setError(`You must upload atleast one image`);
+      if (+formData.regularPrice < +formData.discountedPrice)
+        return setError(`Discounted price must be lower than regular price`);
 
       setLoading(true);
       setError(false);
@@ -293,10 +295,12 @@ export default function CreateListing() {
                 value={formData.regularPrice}
               />
               <p>regularPrice</p>
-              <span className="text-xs">( $ / month)</span>
+              {formData.type === "rent" && (
+                <span className="text-xs">($ / month)</span>
+              )}
             </div>
-            
-            {formData.offer && ( 
+
+            {formData.offer && (
               <div className="flex items-center gap-2">
                 <input
                   type="number"
@@ -309,7 +313,9 @@ export default function CreateListing() {
                   value={formData.discountedPrice}
                 />
                 <p>discountedPrice</p>
-                <span className="text-xs">( $ / month)</span>
+                {formData.type === "rent" && (
+                  <span className="text-xs">($ / month)</span>
+                )}
               </div>
             )}
           </div>
@@ -364,7 +370,10 @@ export default function CreateListing() {
                 </button>
               </div>
             ))}
-          <button disabled={loading || uploading} className="p-3 bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 disabled:opacity-80">
+          <button
+            disabled={loading || uploading}
+            className="p-3 bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 disabled:opacity-80"
+          >
             {loading ? "Creating..." : `Create Listing`}
           </button>
           {error && <p className="text-red-600 text-sm ">{error}</p>}
