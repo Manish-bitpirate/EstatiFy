@@ -6,6 +6,9 @@ import cookieParser from "cookie-parser";
 import userRouter from "./routes/user.route.js";
 import authRouter from "./routes/auth.route.js";
 import listingRouter from "./routes/listing.route.js";
+import path from 'path';
+
+const __dirname = path.resolve();
 
 //for using env variables
 dotenv.config();
@@ -29,14 +32,21 @@ const listener=app.listen(8000, (req,  res)=>{
 //server ->express routes
 app.get("/",(req,res)=>{res.send("Backend Home Route Working 💥💥💥")});
 
-//route for user data- update/delete func
+//route for user data- get/update/delete/all user listings operations
 app.use("/api/user", userRouter);
 
-//route for user sign- in/up/out
+//route for user sign- in/up/out user operations
 app.use("/api/auth", authRouter);
 
-//route for listing
+//route for listing - create/delete/update/get/search listings operations
 app.use("/api/listing", listingRouter);
+
+//deployment setup
+app.use(express.static(path.join(__dirname, '/Client/dist')));
+
+app.get('*', (res, req)=> {
+    res.sendFile(path.join(__dirname, 'Client', 'dist', 'index.html'));
+})
 
 //error handler
 app.use((err, req, res, next)=>{
