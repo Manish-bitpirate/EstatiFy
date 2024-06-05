@@ -41,12 +41,14 @@ app.use("/api/auth", authRouter);
 //route for listing - create/delete/update/get/search listings operations
 app.use("/api/listing", listingRouter);
 
+
 //deployment setup
 app.use(express.static(path.join(__dirname, '/Client/dist')));
 
-app.get('*', (res, req)=> {
-    res.sendFile(path.join(__dirname, 'Client', 'dist', 'index.html'));
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'Client', 'dist', 'index.html'));
 })
+
 
 //error handler
 app.use((err, req, res, next)=>{
