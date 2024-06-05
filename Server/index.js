@@ -6,8 +6,9 @@ import cookieParser from "cookie-parser";
 import userRouter from "./routes/user.route.js";
 import authRouter from "./routes/auth.route.js";
 import listingRouter from "./routes/listing.route.js";
-import path from 'path';
 
+//deployment setup
+import path from 'path';
 const __dirname = path.resolve();
 
 //for using env variables
@@ -29,8 +30,6 @@ const listener=app.listen(8000, (req,  res)=>{
     console.log("Server is running at port " + listener.address().port);
 });
 
-//server ->express routes
-app.get("/",(req,res)=>{res.send("Backend Home Route Working 💥💥💥")});
 
 //route for user data- get/update/delete/all user listings operations
 app.use("/api/user", userRouter);
