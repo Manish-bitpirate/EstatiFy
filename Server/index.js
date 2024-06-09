@@ -22,7 +22,7 @@ app.use(cookieParser());
 mongoose.connect(process.env.MONGO).then(()=>{
         console.log("Connected to db successfully");
     }).catch((err)=>{
-        console.error(err);
+        console.log(err);
 });
 
 //listener ->port
@@ -30,8 +30,6 @@ const listener=app.listen(8000, (req,  res)=>{
     console.log("Server is running at port " + listener.address().port);
 });
 
-//server ->express routes
-app.get("/",(req,res)=>{res.send("Backend Home Route Working 💥💥💥")});
 
 //route for user data- get/update/delete/all user listings operations
 app.use("/api/user", userRouter);
@@ -46,9 +44,9 @@ app.use("/api/listing", listingRouter);
 //deployment setup
 app.use(express.static(path.join(__dirname, '/Client/dist')));
 
-// app.get('*', (req, res) => {
-//   res.sendFile(path.join(__dirname, 'Client', 'dist', 'index.html'));
-// })
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'Client', 'dist', 'index.html'));
+})
 
 
 //error handler

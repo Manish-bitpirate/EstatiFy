@@ -31,7 +31,7 @@ useEffect(() => {
         <Link to="/">
           <h1 className="font-bold text-sm sm:text-xl flex flex-wrap">
             <span className="text-slate-400 ">Estat</span>
-            <span className="text-slate-700 ">iFy📦</span>
+            <span className="text-slate-700 ">iFy</span>
           </h1>
         </Link>
         <form
